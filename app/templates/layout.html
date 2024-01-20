@@ -22,8 +22,11 @@
 
     <div class="container">
         <div class="p-3">
-            <h1>Placeholder</h1>
+            <h1>{% block title %}{% endblock %}</h1>
             <hr>
+
+            {% include 'assets/flash.html' %}
+            
             {% block body %}{% endblock %}
         </div>
     </div>
