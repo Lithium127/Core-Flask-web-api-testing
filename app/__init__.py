@@ -1,4 +1,6 @@
-from flask import Flask, render_template, flash
+from flask import Flask, render_template, g, flash
+
+import time
 
 from . import config
 
@@ -28,6 +30,8 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(teams)
 
 def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
+    from app.site_info import site_info
+    app.register_blueprint(site_info)
     """Creates an instance of the CORE 2062 scouting site for use in a web application
 
     Args:
@@ -47,13 +51,14 @@ def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     from .database import db
     with app.app_context():
         db.create_all()
+    
+    @app.before_request
+    def before_request():
+        g.request_start_time = time.time()
+        g.request_time = lambda: f"{time.time() - g.request_start_time}s"
 
     @app.route("/")
     def index():
-
-        flash("This is a warning!", "warning")
-        flash("This is just a message")
-
         return render_template("index.html")
     
     return app
