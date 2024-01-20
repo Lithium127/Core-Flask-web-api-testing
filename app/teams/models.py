@@ -8,8 +8,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 # TBA Documentation: https://www.thebluealliance.com/apidocs/v3 
 
 class Team(db.Model):
+    
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
+
+    # weather the team is using this system for scouting, use for login method?
+    is_scouting: Mapped[bool] = mapped_column()
 
     def __init__(self, team_number: int, **kwargs) -> None:
 
