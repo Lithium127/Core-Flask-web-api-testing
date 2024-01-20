@@ -6,11 +6,23 @@ def register_extensions(app: Flask) -> None:
     """REgisters all flask extensions to the app
 
     Args:
-        app (Flask): The target app
+        app (Flask): Target Flask app
     """
     from .database import db
 
     db.init_app(app)
+
+def register_blueprints(app: Flask) -> None:
+    """Registers Flask Blueprints with the application
+
+    Args:
+        app (Flask): Target Flask app
+    """
+    from app.scouting import scouting
+    app.register_blueprint(scouting)
+
+    from app.teams import teams
+    app.register_blueprint(teams)
 
 def create_app(config: BaseConfig = BaseConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
