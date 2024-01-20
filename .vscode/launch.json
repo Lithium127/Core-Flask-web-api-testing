@@ -5,10 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "Python: Launch Flask",
             "type": "python",
             "request": "launch",
             "module": "flask",
+            "console": "externalTerminal",
             "env": {
                 "FLASK_APP": "app",
                 "FLASK_DEBUG": "1"
@@ -20,13 +21,6 @@
             ],
             "jinja": true,
             "justMyCode": true
-        },
-        {
-            "name": "Launch Edge",
-            "request": "launch",
-            "type": "msedge",
-            "url": "http://localhost:5000",
-            "webRoot": "${workspaceFolder}"
         }
     ]
 }
