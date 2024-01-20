@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ config.SITE_NAME }}</title>
+    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+
+    {% assets 'css_all' %}
+    <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
+</head>
+
+<body>
+    {% include 'assets/menu.html' %}
+</body>
+
+</html>

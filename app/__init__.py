@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 from .config import BaseConfig
 
@@ -9,8 +9,10 @@ def register_extensions(app: Flask) -> None:
         app (Flask): Target Flask app
     """
     from .database import db
-
     db.init_app(app)
+
+    from .assets import assets
+    assets.init_app(app)
 
 def register_blueprints(app: Flask) -> None:
     """Registers Flask Blueprints with the application
@@ -43,6 +45,6 @@ def create_app(config: BaseConfig = BaseConfig()) -> Flask:
 
     @app.route("/")
     def index():
-        return "Hello World!"
+        return render_template("index.html")
     
     return app
