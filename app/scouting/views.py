@@ -1,3 +1,6 @@
+
+from flask import render_template
+
 from . import scouting
 
 from .models import GameMatch, DataTranslation, Report, ReportData
@@ -5,7 +8,7 @@ from .models import GameMatch, DataTranslation, Report, ReportData
 
 @scouting.route("/")
 def index():
-    return "Scouting"
+    return render_template('landing.html')
 
 
 # API endpoint for sending data to.

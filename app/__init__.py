@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, flash
 
 from . import config
 
@@ -8,10 +8,6 @@ def register_extensions(app: Flask) -> None:
     Args:
         app (Flask): Target Flask app
     """
-<<<<<<< HEAD
-
-=======
->>>>>>> a4085f2 (Created Base Index)
     from .database import db
     db.init_app(app)
 
@@ -54,6 +50,10 @@ def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
 
     @app.route("/")
     def index():
+
+        flash("This is a warning!", "warning")
+        flash("This is just a message")
+
         return render_template("index.html")
     
     return app
