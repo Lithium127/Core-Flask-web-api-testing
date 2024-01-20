@@ -1,4 +1,6 @@
-from flask import Flask, render_template, flash
+from flask import Flask, render_template, g, flash
+
+import time
 
 from .config import BaseConfig
 
@@ -26,6 +28,9 @@ def register_blueprints(app: Flask) -> None:
     from app.teams import teams
     app.register_blueprint(teams)
 
+    from app.site_info import site_info
+    app.register_blueprint(site_info)
+
 def create_app(config: BaseConfig = BaseConfig) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
 
@@ -43,12 +48,13 @@ def create_app(config: BaseConfig = BaseConfig) -> Flask:
     register_extensions(app)
     register_blueprints(app)
 
+    @app.before_request
+    def before_request():
+        g.request_start_time = time.time()
+        g.request_time = lambda: f"{time.time() - g.request_start_time}s"
+
     @app.route("/")
     def index():
-
-        flash("This is a warning!", "warning")
-        flash("This is just a message")
-
         return render_template("index.html")
     
     return app
