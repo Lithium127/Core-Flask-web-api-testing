@@ -1,1 +1,13 @@
 {% extends 'layout.html' %}
+
+{% from 'macros/card.html' import card_wide_link %}
+
+{% block body %}
+    {{ card_wide_link(
+        "Title",
+        "Start scouting easy",
+        "Follow this link to go to the scouting form",
+        button_text="Take me there!",
+        link=url_for('scouting.report')
+    )}}
+{% endblock %}

@@ -9,6 +9,6 @@ def index():
 
 
 # API endpoint for sending data to.
-@scouting.route("/report", methods=["POST"])
+@scouting.route("/report", methods=["GET", "POST"])
 def report():
     return "Scouting Post request"

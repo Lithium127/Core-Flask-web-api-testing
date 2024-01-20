@@ -10,10 +10,23 @@
     {% assets 'css_all' %}
     <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
+
+    {% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 </head>
 
-<body>
+<body class="">
+    <!-- Add upper section with site banner -->
     {% include 'assets/menu.html' %}
+
+    <div class="container">
+        <div class="p-3">
+            <h1>Placeholder</h1>
+            <hr>
+            {% block body %}{% endblock %}
+        </div>
+    </div>
 </body>
 
 </html>

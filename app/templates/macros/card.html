@@ -1,0 +1,13 @@
+
+{% macro card_wide_link(header, title, text, button_text = '', link = "#") -%}
+<div class="card">
+    <h5 class="card-header">{{ header }}</h5>
+    <div class="card-body">
+        <h5 class="card-title">{{ title }}</h5>
+        <p class="card-text">{{ text }}</p>
+        {% if button_text != "" %}
+            <a href="{{ link }}" class="btn btn-primary">{{ button_text }}</a>
+        {% endif %}
+    </div>
+</div>
+{%- endmacro %}
