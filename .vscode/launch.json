@@ -12,11 +12,12 @@
             "console": "externalTerminal",
             "env": {
                 "FLASK_APP": "app",
-                "FLASK_DEBUG": "1"
+                "FLASK_DEBUG": "1",
+                "SECRET_KEY": "development"
             },
             "args": [
                 "run",
-                "--no-debugger",
+                "--debugger",
                 "--no-reload"
             ],
             "jinja": true,
