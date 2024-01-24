@@ -1,5 +1,6 @@
 from . import scouting
 
+from .models import GameMatch, DataTranslation, Report, ReportData
 
 
 @scouting.route("/")

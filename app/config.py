@@ -1,6 +1,8 @@
 
 import os
 
+from datetime import date
+
 
 class BaseConfig(object):
     # The name of the site used for internal sync, purely visual
@@ -8,6 +10,9 @@ class BaseConfig(object):
 
     # Key used for encryption of site traffic. DO NOT SHARE
     SECRET_KEY = os.environ.get("SECRET_KEY", None)
+
+    # Function for automatically updating the current year
+    CURRENT_YEAR = lambda: date.today().year
 
     # The path or URL to the site's database, defaults to an in-memory only database if the env is not set
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
@@ -20,4 +25,6 @@ class DevelopmentConfig(BaseConfig):
     SECRET_KEY = "development"
 
 class TestingConfig(BaseConfig):
-    pass
+    TESTING = True
+    SECRET_KEY = 'testing'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:" # Move to fully in memory

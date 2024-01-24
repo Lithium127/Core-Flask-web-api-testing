@@ -8,8 +8,8 @@ def register_extensions(app: Flask) -> None:
     Args:
         app (Flask): Target Flask app
     """
-    from .database import db
 
+    from .database import db
     db.init_app(app)
 
 def register_blueprints(app: Flask) -> None:
@@ -18,6 +18,7 @@ def register_blueprints(app: Flask) -> None:
     Args:
         app (Flask): Target Flask app
     """
+    
     from app.scouting import scouting
     app.register_blueprint(scouting)
 
