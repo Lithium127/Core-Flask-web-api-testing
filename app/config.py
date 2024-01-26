@@ -15,7 +15,10 @@ class BaseConfig(object):
     CURRENT_YEAR = lambda: date.today().year
 
     # The path or URL to the site's database, defaults to an in-memory only database if the env is not set
-    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
+    # Should default to None, raising an error if not defined
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", None)
+
+    # API Key for accessing the FRC website api, used for specific team data and other information about the current season
 
 
 
@@ -23,6 +26,7 @@ class DevelopmentConfig(BaseConfig):
 
     # Change the key to avoid issues with development env variables
     SECRET_KEY = "development"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 class TestingConfig(BaseConfig):
     TESTING = True

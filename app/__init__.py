@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .config import BaseConfig
+from . import config
 
 def register_extensions(app: Flask) -> None:
     """REgisters all flask extensions to the app
@@ -25,7 +25,7 @@ def register_blueprints(app: Flask) -> None:
     from app.teams import teams
     app.register_blueprint(teams)
 
-def create_app(config: BaseConfig = BaseConfig()) -> Flask:
+def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
 
     Args:
@@ -41,6 +41,10 @@ def create_app(config: BaseConfig = BaseConfig()) -> Flask:
 
     register_extensions(app)
     register_blueprints(app)
+
+    from .database import db
+    with app.app_context():
+        db.create_all()
 
     @app.route("/")
     def index():

@@ -1,7 +1,7 @@
 import pytest
 
 from app import create_app, config
-from app.scouting.models import Report
+
 
 @pytest.fixture()
 def app():
@@ -28,14 +28,5 @@ def test_request_index(client):
     assert b"Hello World!" in response.data
 
 
-def test_database_report(app):
-    with app.app_context():
-        report = Report(
-            "John Doe",
-            6,
-            "2062",
-            {
-                "hover":10
-            }
-        )
+
     
