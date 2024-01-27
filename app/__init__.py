@@ -29,9 +29,10 @@ def register_blueprints(app: Flask) -> None:
     from app.teams import teams
     app.register_blueprint(teams)
 
-def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     from app.site_info import site_info
     app.register_blueprint(site_info)
+
+def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
 
     Args:
