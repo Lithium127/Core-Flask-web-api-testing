@@ -2,14 +2,15 @@ from __future__ import annotations
 import typing as t
 
 from datetime import date
+import contextlib
 
 from flask import current_app
 
 from app.database import db, CRUDMixin
 
 
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship, and_
+from sqlalchemy import ForeignKey, select
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if t.TYPE_CHECKING:
     from app.teams.models import Team
@@ -34,6 +35,20 @@ class GameMatch(db.Model, CRUDMixin):
                     {}
                 )
             )
+    
+    def add_report(self, report: Report, commit: bool = True) -> None:
+        """Adds a report to the report list usnig the report's position attribute
+        overwrites old report.
+
+
+        Args:
+            report (Report): Report object to store
+            commit (bool, optional): Weather to commit. Defaults to True.
+        """
+        self.reports[report.position] = report
+
+        if commit:
+            self.save()
             
 
 
@@ -51,9 +66,31 @@ class DataTranslation(db.Model, CRUDMixin):
         self.column_key = column_key
         self.title = title
 
+    def __repr__(self) -> str:
+        return f"<DataTranslation col={self.column_key} title={self.title}>"
+
+    def __str__(self) -> str:
+        return f"<DataTranslation col={self.column_key} title={self.title}>"
+    
 
     @classmethod
     def add_keys(cls, values: dict[str, t.Union[bool, str, int]]) -> None:
+        """Creates rows in database from a dict, this initially populates the translation table
+        The method uses the current year for adding objects and does not yet do data validation so repeat
+        title can exist
+
+        Example data : {
+            "bool_01":bool,
+            "bool_02":True,
+            "int_01":int,
+            "int_02":0,
+            "str_01":str,
+            "str_02":""
+        }
+
+        Args:
+            values (dict[str, t.Union[bool, str, int]]): A dict containing either types of values that rows will be generated from
+        """
         all_int = ["i"]
         all_bool = ["b"]
         all_str = ["s"]
@@ -64,15 +101,15 @@ class DataTranslation(db.Model, CRUDMixin):
             v = values[key]
 
             # get the type of data that will be stored at this value and add the key to its assigned list
-            if type(v) == int:
+            if type(v) == int or v == int:
                 all_int.append(key)
-            elif type(v) == bool:
+            elif type(v) == bool or v == bool:
                 all_bool.append(key)
-            elif type(v) == str:
+            elif type(v) == str or v == str:
                 all_str.append(key)
-        
 
         for type_list in [all_bool, all_int, all_str]:
+
             type_prefix = type_list.pop(0) # get target type from the first entry in the current list
             counter = 0
 
@@ -81,12 +118,12 @@ class DataTranslation(db.Model, CRUDMixin):
                 formatted_counter = str(counter) if len(str(counter)) == 2 else f"0{str(counter)[0]}"
                 # create and save an row that contains translation data for this table
                 cls(str(type_prefix + formatted_counter), entry_key).save()
-                
+
                 counter += 1 # increment the counter
 
 
 
-class ReportData(db.Model):
+class ReportData(db.Model, CRUDMixin):
     """
     This is a class that contains all dynamic data for each report
     Each row of this table contains values without context, and a parent report
@@ -152,18 +189,32 @@ class ReportData(db.Model):
     i18: Mapped[t.Optional[str]] = mapped_column()
     i19: Mapped[t.Optional[str]] = mapped_column()
 
-    def set_value(self, key, value) -> None:
-        location = db.session.query(DataTranslation.column_key).filter(
-            and_(
-                DataTranslation.fiscal_year == date.today().year,
-                DataTranslation.title == key
-            )
-        )
-        print(location)
+    def set_values_from_dict(self, values: dict[str, t.Union[bool, str, int, None]]) -> None:
+        """Sets the data values for a specified ReportData row from a dictionary.
+        References DataTranslation table with each key in dict to find specified
+        location for each value
 
+        Args:
+            values (dict[str, bool | str | int | None]): Values to populate the row with
+        """
+        stmt = select(DataTranslation).where(DataTranslation.fiscal_year == date.today().year)
+        cols = db.session.scalars(stmt).all()
+
+        with contextlib.suppress(AttributeError, KeyError): # 
+            for dt in cols:
+                value = values.get(dt.title, None)
+                
+                if value is None:
+                    continue
+
+                self.__setattr__(dt.column_key, value)
+
+
+        
 
 
 class Report(db.Model, CRUDMixin):
+    """A report object that contains constant header data for each report."""
     id: Mapped[int] = mapped_column(primary_key=True)
 
     gamematch_id: Mapped[int] = mapped_column(ForeignKey("game_match.id"))
@@ -179,15 +230,14 @@ class Report(db.Model, CRUDMixin):
 
     comments: Mapped[str] = mapped_column(default="")
 
-    def __init__(self, reporter_name, position, team_number, data: dict[str, t.Union[str, bool, int]], comments: str = "") -> None:
+    def __init__(self, reporter_name, position, team_number, data: dict[str, t.Union[str, bool, int, None]], comments: str = "") -> None:
         self.reporter = reporter_name
         self.position = position
         self.team_number = team_number
         self.comments = comments
 
         # here's where data needs to reference the translation table to see where to put each value
-        for key in data.keys():
-            test = key
+        self.dynamic_data = ReportData().set_values_from_dict(data)
     
 
     @classmethod
