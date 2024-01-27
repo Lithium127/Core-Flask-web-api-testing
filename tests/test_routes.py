@@ -25,7 +25,7 @@ def test_request_index(client):
         client (_type_): _description_
     """
     response = client.get("/")
-    assert b"Hello World!" in response.data
+    assert b"<!DOCTYPE html>" in response.data
 
 
 

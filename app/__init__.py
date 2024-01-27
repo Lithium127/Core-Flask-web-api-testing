@@ -32,6 +32,10 @@ def register_blueprints(app: Flask) -> None:
     from app.site_info import site_info
     app.register_blueprint(site_info)
 
+def register_commands(app: Flask) -> None:
+    from app.commands import scout_data
+    app.cli.add_command(scout_data)
+
 def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
 
@@ -48,6 +52,7 @@ def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
 
     register_extensions(app)
     register_blueprints(app)
+    register_commands(app)
 
     from .database import db
     with app.app_context():

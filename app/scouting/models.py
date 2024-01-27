@@ -15,9 +15,32 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 if t.TYPE_CHECKING:
     from app.teams.models import Team
 
-class GameMatch(db.Model, CRUDMixin):
+class Competitions(db.Model):
+    """Table that contains the match schedule for a target event, as well as
+    
+
+    Args:
+        db (_type_): _description_
+    """
     id: Mapped[int] = mapped_column(primary_key=True)
     year: Mapped[int] = mapped_column(default=lambda: date.today().year)
+
+    start_date: Mapped[date] = mapped_column()
+    end_data: Mapped[date] = mapped_column()
+
+    name: Mapped[str] = mapped_column()
+
+    gamematch: Mapped[t.List[GameMatch]] = relationship(back_populates='comp')
+
+
+class GameMatch(db.Model, CRUDMixin):
+    """A table that contains information for each match in the competition
+    Contains 6 reports that hold information for each team in the match
+    """
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    comp_id: Mapped[int] = mapped_column(ForeignKey('competitions.id'))
+    comp: Mapped[Competitions] = relationship()
 
     reports: Mapped[t.Optional[t.List[Report]]] = relationship(back_populates="gamematch")
 
@@ -49,6 +72,9 @@ class GameMatch(db.Model, CRUDMixin):
 
         if commit:
             self.save()
+    
+    def get_all_matches(self):
+        pass
             
 
 
