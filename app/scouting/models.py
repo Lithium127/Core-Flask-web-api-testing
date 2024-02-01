@@ -32,6 +32,10 @@ class Competitions(db.Model):
 
     gamematch: Mapped[t.List[GameMatch]] = relationship(back_populates='comp')
 
+    @classmethod
+    def create_from_frc(cls, com_name: str) -> Competitions:
+        pass
+
 
 class GameMatch(db.Model, CRUDMixin):
     """A table that contains information for each match in the competition
