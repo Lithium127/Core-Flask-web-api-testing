@@ -3,6 +3,8 @@ import os
 
 from datetime import date
 
+import base64
+
 
 class BaseConfig(object):
     # The name of the site used for internal sync, purely visual
@@ -19,7 +21,10 @@ class BaseConfig(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", None)
 
     # API Key for accessing the FRC website api, used for specific team data and other information about the current season
+    FRC_API_USERNAME = os.environ.get("FRC_API_USERNAME", "core2062")
+    FRC_API_KEY = os.environ.get("FRC_API_KEY", "47744c35-3340-443d-bda0-632a18133b84")
 
+    FRC_API_ENCODED_KEY = base64.b64encode(f"{FRC_API_USERNAME}:{FRC_API_KEY}".encode('ascii')).decode('ascii')
 
 
 class DevelopmentConfig(BaseConfig):

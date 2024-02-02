@@ -13,7 +13,8 @@
             "env": {
                 "FLASK_APP": "app",
                 "FLASK_DEBUG": "1",
-                "SECRET_KEY": "development"
+                "SECRET_KEY": "development",
+                "FRC_API_KEY": "47744c35-3340-443d-bda0-632a18133b84"
             },
             "args": [
                 "run",
