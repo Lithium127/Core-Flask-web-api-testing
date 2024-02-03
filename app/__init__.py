@@ -16,6 +16,9 @@ def register_extensions(app: Flask) -> None:
     from .assets import assets
     assets.init_app(app)
 
+    from .extensions import bootstrap
+    bootstrap.init_app(app)
+
 def register_blueprints(app: Flask) -> None:
     """Registers Flask Blueprints with the application
 
