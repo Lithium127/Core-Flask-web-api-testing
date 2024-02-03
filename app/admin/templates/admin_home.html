@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% from 'macros/card.html' import card_wide_link %}
+
+{% block title %}
+    Admin | Homepage
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome</h1>
+
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                {% call card_wide_link("Databases","Modify data tables by year") %}
+                    <p>
+                        Follow this link to modify names and other information for dynamic report data
+                    </p>
+                {% endcall %}
+            </div>
+            <div class="col-md-4">
+                <h2>Quick Reference</h2>
+                <hr>
+                <div class="card">
+                    <h5 class="card-header">Events</h5>
+                    <div class="card-body">
+                        <p class="card-text">Quickly add new events from the FRC API</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEventForm">Create Event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal for creating a new event #}
+    <div class="modal fade" id="newEventForm" tabindex="-1" data-bs-backdrop="static" aria-labelledby="newEventLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="newEventLabel">Create New Event</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon-3">Event ID</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon-3 basic-addon-4">
+                        </div>
+                        <div class="form-text" id="basic-addon-4">Match ID's can be found at: <a href="#">http://url.com</a></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
