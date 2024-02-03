@@ -3,13 +3,12 @@ from flask_assets import Environment, Bundle
 
 assets = Environment()
 
+# any other scripts
 js = Bundle(
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
     'site.js'
 )
 
 css = Bundle(
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
     'style.css'
 )
 
