@@ -6,7 +6,8 @@ from datetime import date
 
 from flask import current_app
 
-
+class FRCAPIError(Exception):
+    pass
 
 class BaseRequest(object):
 
@@ -32,7 +33,7 @@ class BaseRequest(object):
         self.method = method
         self.data = data
         self.headers = headers
-
+        
         self._make_request()
 
     def _make_request(self) -> None:
@@ -45,6 +46,9 @@ class BaseRequest(object):
         # catch errors and process response
         
         self.response = response
+        
+        if self.status != 200:
+            raise FRCAPIError(f"Error {self.status}")
         self.json = response.json()
         
     @property
@@ -71,7 +75,7 @@ class SeasonSummary(BaseRequest):
         super(SeasonSummary, self).__init__(path = str(year))
 
 class EventSchedule(BaseRequest):
-    
+
     def __init__(
         self, 
         event_code: str, 
@@ -86,8 +90,39 @@ class EventSchedule(BaseRequest):
         if year is None:
             year = date.today().year
         
+        url_data_keys = [
+            (tournament_level, "tournamentLevel"),
+            (team_number, "teamNumber"),
+            (start, "start"),
+            (end, "end")
+        ]
         
         path = f"{year}/schedule/{event_code}"
+        
+        for url_data in url_data_keys:
+            if url_data[0] is not None:
+                if "?" not in path:
+                    path = path + "?"
+                path = f"{path}{url_data[1]}={url_data[0]}"
+        
+        print(f"{self.DEFAULT_ENDPOINT}{path}")
+        
+        super(EventSchedule, self).__init__(path=path)
+    
+    @classmethod
+    def quals(cls, event_code: str, year: t.Optional[int] = None) -> EventSchedule:
+        instance = EventSchedule(event_code, year=year, tournament_level="qual")
+        return instance
+
+    @classmethod
+    def playoff(cls, event_code: str, year: t.Optional[int] = None) -> EventSchedule:
+        instance = EventSchedule(event_code, year=year, tournament_level="playoff")
+        return instance
+
+    @property
+    def schedule(self) -> dict[str, t.Any]:
+        return self.json["Schedule"]
+
 
 class Events(BaseRequest):
     event_list: list[dict]
@@ -122,7 +157,6 @@ class Events(BaseRequest):
             if url_data[0] is not None:
                 path = f"{path}{url_data[1]}={url_data[0]}"
         
-        print(path)
         super(Events, self).__init__(path=path)
         
         self.event_count = self.json["eventCount"]

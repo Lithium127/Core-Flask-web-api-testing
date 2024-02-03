@@ -44,6 +44,15 @@ def test_events(app):
     assert len(events.event_list) == events.event_count
     assert len(events.event_list) > 0
 
+def test_event_schedule_quals(app):
+    with app.app_context():
+        schedule = api.EventSchedule.quals("ARLI", year=2020)
+    
+    print("\n\n".join([ str(x) for x in schedule.json["Schedule"]]))
+
+def test_event_schedule_playoff(app):
+    with app.app_context():
+        schedule = api.EventSchedule.playoff("ARLI", year=2020)
 
 def test_team_season(app):
     with app.app_context():
@@ -56,3 +65,4 @@ def test_team(app):
         team = api.Team(2062)
     
     print(team.info)
+

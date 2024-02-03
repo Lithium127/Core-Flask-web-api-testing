@@ -8,6 +8,8 @@ from flask import current_app
 
 from app.database import db, CRUDMixin
 
+from app.frc_api import api
+
 
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,7 +17,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 if t.TYPE_CHECKING:
     from app.teams.models import Team
 
-class Competitions(db.Model):
+class Competitions(db.Model, CRUDMixin):
     """Table that contains the match schedule for a target event, as well as
     
 
@@ -33,8 +35,18 @@ class Competitions(db.Model):
     gamematch: Mapped[t.List[GameMatch]] = relationship(back_populates='comp')
 
     @classmethod
-    def create_from_frc(cls, com_name: str) -> Competitions:
-        pass
+    def create_from_frc(cls, event_code: str, commit: bool = True, tournament_level: str = "playoff") -> Competitions:
+
+        instance = cls()
+        schedule = api.EventSchedule(event_code=event_code, year=instance.year, tournament_level="playoff")
+        
+        instance.gamematch = []
+        for match_ in schedule.schedule:
+            instance.gamematch.append(GameMatch.from_frc_report(match_))
+        
+        if commit:
+            instance.save()
+        
 
 
 class GameMatch(db.Model, CRUDMixin):
@@ -45,23 +57,36 @@ class GameMatch(db.Model, CRUDMixin):
 
     comp_id: Mapped[int] = mapped_column(ForeignKey('competitions.id'))
     comp: Mapped[Competitions] = relationship()
+    
+    match_number: Mapped[int] = mapped_column()
+    match_level: Mapped[str] = mapped_column()
+    
 
     reports: Mapped[t.Optional[t.List[Report]]] = relationship(back_populates="gamematch")
 
     def __init__(self) -> None:
-        self._add_reports()
+        super(GameMatch, self).__init__()
 
-    def _add_reports(self) -> None:
+    def _add_reports(self, teams: list[dict[str,t.Any]]) -> None:
         self.reports = []
-        for pos in range(1,7):
+        for team in len(teams):
             self.reports.append(
                 Report(
                     None,
-                    pos,
-                    None,
-                    {}
+                    position = team["station"][-1] if "Red" not in team["station"] else team["station"][-1] + 3,
+                    team_number = team["teamNumber"]
                 )
             )
+    
+    @classmethod
+    def from_frc_report(cls, match_: dict[str, t.Any]) -> GameMatch:
+        print(match_)
+        instance = GameMatch()
+        instance.match_number = int(match_["matchNumber"])
+        instance.match_level = match_["tournamentLevel"]
+        instance._add_reports(match_["teams"])
+        return instance
+
     
     def add_report(self, report: Report, commit: bool = True) -> None:
         """Adds a report to the report list usnig the report's position attribute
@@ -76,9 +101,6 @@ class GameMatch(db.Model, CRUDMixin):
 
         if commit:
             self.save()
-    
-    def get_all_matches(self):
-        pass
             
 
 

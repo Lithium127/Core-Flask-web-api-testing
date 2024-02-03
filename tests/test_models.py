@@ -4,7 +4,7 @@ from app import create_app, config
 
 from app.database import db
 
-from app.scouting.models import Report, GameMatch, DataTranslation, ReportData
+from app.scouting.models import Report, GameMatch, DataTranslation, ReportData, Competitions
 
 @pytest.fixture()
 def app():
@@ -64,3 +64,10 @@ def test_translation_table(app):
 def test_dynamic_report(app):
     with app.app_context():
         pass
+
+
+def test_competition_from_frc(app):
+    with app.app_context():
+        comp = Competitions.create_from_frc("ARLI")
+    
+    
