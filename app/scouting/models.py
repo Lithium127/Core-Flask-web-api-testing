@@ -1,7 +1,8 @@
 from __future__ import annotations
 import typing as t
 
-from datetime import date
+
+from datetime import date, datetime
 import contextlib
 
 from flask import current_app
@@ -28,24 +29,33 @@ class Competitions(db.Model, CRUDMixin):
     year: Mapped[int] = mapped_column(default=lambda: date.today().year)
 
     start_date: Mapped[date] = mapped_column()
-    end_data: Mapped[date] = mapped_column()
+    end_date: Mapped[date] = mapped_column()
 
     name: Mapped[str] = mapped_column()
 
     gamematch: Mapped[t.List[GameMatch]] = relationship(back_populates='comp')
 
+    def __init__(self, *args, **kwargs) -> None:
+        super(Competitions, self).__init__(*args, **kwargs)
+
     @classmethod
-    def create_from_frc(cls, event_code: str, commit: bool = True, tournament_level: str = "playoff") -> Competitions:
+    def create_from_frc(cls, event_code: str, tournament_level: str = "playoff", year: t.Optional[int] = None) -> Competitions:
 
         instance = cls()
-        schedule = api.EventSchedule(event_code=event_code, year=instance.year, tournament_level="playoff")
-        
+        if year is not None:
+            instance.year = year
+        schedule = api.EventSchedule(event_code=event_code, year=instance.year, tournament_level=tournament_level)
+        event_data = api.Events(year = instance.year, event_code = event_code).json["Events"][0]
         instance.gamematch = []
         for match_ in schedule.schedule:
             instance.gamematch.append(GameMatch.from_frc_report(match_))
         
-        if commit:
-            instance.save()
+        instance.start_date = datetime.strptime(event_data["dateStart"], "%Y-%m-%dT%H:%M:%S").date() # 2024-03-06T00:00:00
+        instance.end_date = datetime.strptime(event_data["dateEnd"], "%Y-%m-%dT%H:%M:%S").date()
+
+        instance.name = event_data["name"]
+        
+        return instance
         
 
 
@@ -69,18 +79,20 @@ class GameMatch(db.Model, CRUDMixin):
 
     def _add_reports(self, teams: list[dict[str,t.Any]]) -> None:
         self.reports = []
-        for team in len(teams):
+        for index in range(len(teams)):
+            team = teams[index]
+            pos = int(team["station"][-1]) if "Red" not in team["station"] else int(team["station"][-1]) + 3
             self.reports.append(
                 Report(
                     None,
-                    position = team["station"][-1] if "Red" not in team["station"] else team["station"][-1] + 3,
-                    team_number = team["teamNumber"]
+                    position = pos,
+                    team_number = str(team["teamNumber"]),
+                    data={}
                 )
             )
     
     @classmethod
     def from_frc_report(cls, match_: dict[str, t.Any]) -> GameMatch:
-        print(match_)
         instance = GameMatch()
         instance.match_number = int(match_["matchNumber"])
         instance.match_level = match_["tournamentLevel"]

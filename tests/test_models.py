@@ -68,6 +68,6 @@ def test_dynamic_report(app):
 
 def test_competition_from_frc(app):
     with app.app_context():
-        comp = Competitions.create_from_frc("ARLI")
-    
-    
+        comp = Competitions.create_from_frc("ARLI", year=2023)
+        print(comp.gamematch)
+        

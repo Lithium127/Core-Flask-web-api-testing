@@ -157,6 +157,8 @@ class Events(BaseRequest):
             if url_data[0] is not None:
                 path = f"{path}{url_data[1]}={url_data[0]}"
         
+        print(f"{self.DEFAULT_ENDPOINT}{path}")
+
         super(Events, self).__init__(path=path)
         
         self.event_count = self.json["eventCount"]
