@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% from 'macros/card.html' import card_wide_link %}
+
+{% block title %}{{ event["name"] }}{% endblock %}
+
+{% block body %}
+    {% call card_wide_link(
+        "Hello Scouter!",
+        "Start scouting robots easy",
+        button_text="Take me there!",
+        link=url_for('scouting.index')
+    )%}
+    Follow this link to go to the scouting form!
+    {% endcall %}
+{% endblock %}

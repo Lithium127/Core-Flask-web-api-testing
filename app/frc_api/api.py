@@ -23,9 +23,9 @@ class BaseRequest(object):
     headers: dict
 
     response: requests.Response
+    json: dict
 
     def __init__(self, path: str = "", method: str = "GET", data: dict = {}, headers: dict = {}) -> None:
-        
         self.REQUIRED_HEADERS["Authorization"] = f"Basic {current_app.config.get('FRC_API_ENCODED_KEY', None)}"
         
         self.path = path
@@ -45,7 +45,8 @@ class BaseRequest(object):
         # catch errors and process response
         
         self.response = response
-    
+        self.json = response.json()
+        
     @property
     def status(self) -> int:
         return self.response.status_code
@@ -69,3 +70,73 @@ class SeasonSummary(BaseRequest):
 
         super(SeasonSummary, self).__init__(path = str(year))
 
+class EventSchedule(BaseRequest):
+    
+    def __init__(
+        self, 
+        event_code: str, 
+        year: t.Optional[int] = None, 
+        tournament_level: t.Optional[str] = None, 
+        team_number: t.Optional[int] = None, 
+        *, 
+        start: t.Optional[int] = None, 
+        end: t.Optional[int] = None
+    ) -> None:
+        
+        if year is None:
+            year = date.today().year
+        
+        
+        path = f"{year}/schedule/{event_code}"
+
+class Events(BaseRequest):
+    event_list: list[dict]
+    event_count: int
+    
+    def __init__(
+        self, 
+        year: t.Optional[int] = None,
+        event_code: t.Optional[str] = None,
+        team_number: t.Optional[int] = None,
+        district_code: t.Optional[int] = None,
+        exclue_district: t.Optional[bool] = None,
+        week_number: t.Optional[int] = None,
+        tournement_type: t.Optional[str] = None
+    ) -> None:
+        
+        if year is None:
+            year = date.today().year
+            
+        path = f"{year}/events?"
+        
+        url_data_keys = [
+            (event_code, "eventCode"),
+            (team_number, "teamNumber"),
+            (district_code, "districtCode"),
+            (exclue_district, "excludeDistrict"),
+            (week_number, "weekNumber"),
+            (tournement_type, "tournamentType")
+        ]
+        
+        for url_data in url_data_keys:
+            if url_data[0] is not None:
+                path = f"{path}{url_data[1]}={url_data[0]}"
+        
+        print(path)
+        super(Events, self).__init__(path=path)
+        
+        self.event_count = self.json["eventCount"]
+        self.event_list = self.json["Events"]
+
+
+class Team(BaseRequest):
+    info: dict
+    
+    def __init__(self, team_number: int, *, year: t.Optional[int] = None) -> None:
+        if year is None:
+            year = date.today().year
+        
+        
+        super(Team, self).__init__(path=f"{year}/teams?teamNumber={team_number}")
+        
+        self.info = self.json["teams"][0]

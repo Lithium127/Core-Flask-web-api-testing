@@ -31,6 +31,9 @@ def register_blueprints(app: Flask) -> None:
 
     from app.site_info import site_info
     app.register_blueprint(site_info)
+    
+    from app.frc_api import frc_api
+    app.register_blueprint(frc_api)
 
 def register_commands(app: Flask) -> None:
     from app.commands import scout_data

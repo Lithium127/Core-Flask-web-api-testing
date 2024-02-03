@@ -13,8 +13,6 @@ def app():
 def test_root_api(app):
     with app.app_context():
         rootcall = api.RootCall()
-    
-    print(rootcall.response.json())
 
     normal_headers = {
         "currentSeason": date.today().year,
@@ -35,4 +33,26 @@ def test_season_summary(app):
     with app.app_context():
         season = api.SeasonSummary(2023)
     
-    print(season.response.json())
+    assert season.status == 200
+    assert season.json != {}
+
+
+def test_events(app):
+    with app.app_context():
+        events = api.Events(2023, week_number=2)
+    
+    assert len(events.event_list) == events.event_count
+    assert len(events.event_list) > 0
+
+
+def test_team_season(app):
+    with app.app_context():
+        schedule = api.Events(2024, team_number=2062)
+    
+    print(schedule.json)
+    
+def test_team(app):
+    with app.app_context():
+        team = api.Team(2062)
+    
+    print(team.info)
