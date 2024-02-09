@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-bs-theme="core">
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>{{ config.SITE_NAME }}</title>
+
     <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
 
+    {# Load CSS #}
     {{ bootstrap.load_css() }}
     {% assets 'css_all' %}
     <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
     {% block css_extra %}{% endblock %}
 
+    {# Load JavaScript #}
     {% assets "js_all" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
@@ -38,7 +43,7 @@
 
 <footer>
     <hr>
-    <p><small>{{ g.request_time() }}</small></p>
+    <p class="small text-secondary text-end">RT: {{ g.request_time()[0:7] }}s</p>
 </footer>
 
 </html>

@@ -16,20 +16,22 @@ def database():
     return "WIP"
 
 
-@admin.route("/fetch/event-schedule")
+@admin.post("/fetch/event-schedule")
 def render_event_schedule():
-    event_code = request.args.get("eventCode", None)
-
-    if event_code is None:
+    data = request.get_json()
+    event_code = data.get("eventCode", None)
+    if event_code is None or len(event_code) < 4:
         return "<h1>No event found</h1>" # really bad error handling :(
     
-    year = request.args.get("year", date.today().year)
-    level = request.args.get("level", "qual")
+    year = data.get("year", date.today().year)
+    level = data.get("level", "qual")
 
-    event = api.EventSchedule(
-        event_code=event_code,
-        year=year,
-        tournament_level=level
-    )
+    error = ""
     
-    return render_template("fetch/event_schedule.html", event = event)
+    try:
+        schedule = api.EventSchedule(event_code=event_code,year=year,tournament_level=level).schedule
+    except api.FRCAPIError:
+        schedule = []
+        error = f"No event {event_code} in year {year}"
+    
+    return render_template("fetch/event_schedule.html", schedule = schedule, error = error)

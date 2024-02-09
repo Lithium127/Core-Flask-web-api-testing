@@ -1,5 +1,55 @@
-{% schedule = event.schedule %}
+
 
 <div>
-    {{ schedule }}
-</div>
+
+    {% if schedule|length > 0 %}
+        
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    {# Place for data about response #}
+                    <td>Matches: {{ schedule|length }}</td>
+                </tr>
+                <tr>
+                    <th colspan="1">Match</th>
+                    <th colspan="3">Red</th>
+                    <th colspan="3">Blue</th>
+                </tr>
+                <tr>
+                    <th scope="row">#</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in schedule %}
+                {% set teams = schedule[loop.index-1]["teams"] %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    {% for team in teams %}
+                    <td>{{ team["teamNumber"] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+
+        <div class="alert alert-primary" role="alert">
+            <strong class="text-lg">
+                {% if error != "" %}
+                    {{ error }}
+                {% else %}
+                    There aren't any matches for that event yet
+                {% endif %}
+            </strong>
+        </div>
+
+    {% endif %}
+    </div>

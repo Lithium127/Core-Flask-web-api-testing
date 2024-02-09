@@ -35,7 +35,7 @@
 
     {# Modal for creating a new event #}
     <div class="modal fade" id="newEventForm" tabindex="-1" data-bs-backdrop="static" aria-labelledby="newEventLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="newEventLabel">Create New Event</h1>
@@ -44,22 +44,78 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <div class="input-group">
+
                             <span class="input-group-text" id="event-id-label">Event ID</span>
-                            <input type="text" class="form-control" placeholder="WLIS" id="event-id" aria-describedby="event-id-label">
+                            <input type="text" class="form-control" placeholder="ARLI" id="event-id" aria-describedby="event-id-label">
+                            
                             <div class="form-floating">
-                                <input type="text" class="form-control" placeholder="2021" value="{{ config.CURRENT_YEAR }}" id="event-year">
+                                <input type="text" id="event-year" class="form-control" placeholder="2024">
                                 <label for="event-year">Year</label>
                             </div>
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"></button>
+
+                            <div class="form-floating">
+                                <select class="form-select" id="event-level">
+                                    <option value="qual">Quals</option>
+                                    <option value="playoff">Playoffs</option>
+                                </select>
+                                <label for="event-level">Event Level</label>
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary" onclick="event_schedule()">Search</button>
                         </div>
-                        <div class="form-text" id="basic-addon-4">Match ID's can be found at: <a href="#">http://url.com</a></div>
+
+                        <div class="form-text" id="basic-addon-4">
+                            Match ID's can be found at: 
+                            <a href="https://frc-events.firstinspires.org/2024/Events/EventList" target="_blank"><button class="btn btn-outline-secondary btn-sm">FRC Events</button></a>
+                        </div>
+                    </div>
+                    <div id="event-response-target">
+                        <p>No event selected</p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-primary">Create Event</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        async function request_event_schedule(data = {}) {
+            const event_url = {{ url_for("admin.render_event_schedule")|tojson }};
+            const response = await fetch(event_url, {
+                method: "POST",
+                mode: "cors",
+                credentials: "same-origin",
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+            return response;
+        }
+
+        function event_schedule() {
+            let target = document.getElementById("event-response-target");
+
+            target.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+            var event_level = document.getElementById("event-level");
+
+            let data = {
+                "eventCode": document.getElementById("event-id").value,
+                "year": document.getElementById("event-year").value,
+                "level": event_level.options[event_level.selectedIndex].value
+            };
+            request_event_schedule(data).then(
+                response => response.text()
+            ).then(
+                text => target.innerHTML = text
+            );
+
+            button.innerHTML = "Get Event";
+
+        }
+
+        
+    </script>
 {% endblock %}
