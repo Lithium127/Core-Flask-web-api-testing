@@ -11,10 +11,12 @@
     {% assets 'css_all' %}
     <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
+    {% block css_extra %}{% endblock %}
 
     {% assets "js_all" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    {% block js_extra %}{% endblock %}
 </head>
 
 <body class="">
