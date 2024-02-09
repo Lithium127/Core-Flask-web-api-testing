@@ -44,8 +44,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <div class="input-group">
-                            <span class="input-group-text" id="basic-addon-3">Event ID</span>
-                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon-3 basic-addon-4">
+                            <span class="input-group-text" id="event-id-label">Event ID</span>
+                            <input type="text" class="form-control" placeholder="WLIS" id="event-id" aria-describedby="event-id-label">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" placeholder="2021" value="{{ config.CURRENT_YEAR }}" id="event-year">
+                                <label for="event-year">Year</label>
+                            </div>
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"></button>
                         </div>
                         <div class="form-text" id="basic-addon-4">Match ID's can be found at: <a href="#">http://url.com</a></div>
                     </div>
