@@ -1,14 +1,18 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 
 from datetime import date
 
 from . import admin
+from .form import CreateEventForm
 
 from app.frc_api import api
 
+
+
 @admin.route("/")
 def index():
-    return render_template("admin_home.html")
+    create_event_form = CreateEventForm()
+    return render_template("admin_home.html", create_event_form = create_event_form)
 
 
 @admin.route("/database")
@@ -35,3 +39,7 @@ def render_event_schedule():
         error = f"No event {event_code} in year {year}"
     
     return render_template("fetch/event_schedule.html", schedule = schedule, error = error)
+
+@admin.route("/create_event", methods=['GET', 'POST'])
+def create_event():
+    return redirect(url_for("admin"))

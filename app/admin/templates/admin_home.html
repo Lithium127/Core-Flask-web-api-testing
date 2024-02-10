@@ -43,26 +43,29 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <div class="input-group">
+                        <form id="create-event" action="{{ url_for('admin.create_event') }}" method="post">
+                            <div class="input-group">
 
-                            <span class="input-group-text" id="event-id-label">Event ID</span>
-                            <input type="text" class="form-control" placeholder="ARLI" id="event-id" aria-describedby="event-id-label">
-                            
-                            <div class="form-floating">
-                                <input type="text" id="event-year" class="form-control" placeholder="2024">
-                                <label for="event-year">Year</label>
+                                
+                                <span class="input-group-text" id="event-id-label">Event ID</span>
+                                <input type="text" class="form-control" placeholder="ARLI" id="event-id" aria-describedby="event-id-label">
+                                
+                                <div class="form-floating">
+                                    <input type="text" id="event-year" class="form-control" placeholder="2024">
+                                    <label for="event-year">Year</label>
+                                </div>
+                                
+                                <div class="form-floating">
+                                    <select class="form-select" id="event-level">
+                                        <option value="qual">Quals</option>
+                                        <option value="playoff">Playoffs</option>
+                                    </select>
+                                    <label for="event-level">Event Level</label>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-primary" onclick="event_schedule()">Search</button>
                             </div>
-
-                            <div class="form-floating">
-                                <select class="form-select" id="event-level">
-                                    <option value="qual">Quals</option>
-                                    <option value="playoff">Playoffs</option>
-                                </select>
-                                <label for="event-level">Event Level</label>
-                            </div>
-
-                            <button type="button" class="btn btn-outline-primary" onclick="event_schedule()">Search</button>
-                        </div>
+                        </form>
 
                         <div class="form-text" id="basic-addon-4">
                             Match ID's can be found at: 
@@ -74,14 +77,15 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Create Event</button>
+                    <button type="submit" form="create-event" class="btn btn-primary">Create Event</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        async function request_event_schedule(data = {}) {
+        async function request_event_schedule(data) {
             const event_url = {{ url_for("admin.render_event_schedule")|tojson }};
+            data.append("csrf_token", document.getElementById("csrf_token").value)
             const response = await fetch(event_url, {
                 method: "POST",
                 mode: "cors",
@@ -89,7 +93,7 @@
                 headers:{
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
+                body: data
             });
             return response;
         }
@@ -101,11 +105,10 @@
 
             var event_level = document.getElementById("event-level");
 
-            let data = {
-                "eventCode": document.getElementById("event-id").value,
-                "year": document.getElementById("event-year").value,
-                "level": event_level.options[event_level.selectedIndex].value
-            };
+            let data = new FormData()
+            data.append("eventCode", document.getElementById("event-id").value)
+            data.append("year", document.getElementById("event-year").value)
+            data.append("level", event_level.options[event_level.selectedIndex].value)
             request_event_schedule(data).then(
                 response => response.text()
             ).then(

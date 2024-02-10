@@ -16,8 +16,11 @@ def register_extensions(app: Flask) -> None:
     from .assets import assets
     assets.init_app(app)
 
-    from .extensions import bootstrap
+    from .extensions import bootstrap, csrf_protect
     bootstrap.init_app(app)
+    csrf_protect.init_app(app)
+
+
 
 def register_blueprints(app: Flask) -> None:
     """Registers Flask Blueprints with the application
@@ -41,9 +44,13 @@ def register_blueprints(app: Flask) -> None:
     from app.admin import admin
     app.register_blueprint(admin)
 
+
+
 def register_commands(app: Flask) -> None:
     from app.commands import scout_data
     app.cli.add_command(scout_data)
+
+
 
 def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
