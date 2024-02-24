@@ -4,6 +4,8 @@ import time
 
 from . import config
 
+from app.scouting.models import Competitions
+
 def register_extensions(app: Flask) -> None:
     """REgisters all flask extensions to the app
 
@@ -50,6 +52,9 @@ def register_commands(app: Flask) -> None:
     from app.commands import scout_data
     app.cli.add_command(scout_data)
 
+    from app.admin.cli import admin_cli
+    app.cli.add_command(admin_cli)
+
 
 
 def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
@@ -84,3 +89,7 @@ def create_app(config: config.BaseConfig = config.DevelopmentConfig()) -> Flask:
         return render_template("index.html")
     
     return app
+
+
+
+# place you code in the card body

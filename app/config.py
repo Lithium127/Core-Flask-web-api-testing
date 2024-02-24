@@ -18,11 +18,11 @@ class BaseConfig(object):
 
     # The path or URL to the site's database, defaults to an in-memory only database if the env is not set
     # Should default to None, raising an error if not defined
-    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", None)
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///scouting_site.db")
 
     # API Key for accessing the FRC website api, used for specific team data and other information about the current season
-    FRC_API_USERNAME = os.environ.get("FRC_API_USERNAME", None)
-    FRC_API_KEY = os.environ.get("FRC_API_KEY", None)
+    FRC_API_USERNAME = os.environ.get("FRC_API_USERNAME", "core2062")
+    FRC_API_KEY = os.environ.get("FRC_API_KEY", "47744c35-3340-443d-bda0-632a18133b84")
 
     FRC_API_ENCODED_KEY = base64.b64encode(f"{FRC_API_USERNAME}:{FRC_API_KEY}".encode('ascii')).decode('ascii')
 

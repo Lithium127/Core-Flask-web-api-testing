@@ -6,18 +6,22 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
 
+from sqlalchemy import select
+
 class Base(DeclarativeBase):
     pass
 
 class CRUDMixin(object):
     id: Mapped[int] = mapped_column(primary_key = True)
 
-    def save(self, commit: bool = True) -> CRUDMixin:
+    def add(self) -> CRUDMixin:
         db.session.add(self)
-        if commit:
-            db.session.commit()
+        return self
+
+    def save(self) -> CRUDMixin:
+        self.add()
+        db.session.commit()
         return self
     
-    
 
-db = SQLAlchemy(model_class=Base)
+db = SQLAlchemy()

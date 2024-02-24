@@ -44,6 +44,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <form id="create-event" action="{{ url_for('admin.create_event') }}" method="post">
+                            {# create_event_form.csrf_token #}
                             <div class="input-group">
 
                                 
@@ -73,7 +74,11 @@
                         </div>
                     </div>
                     <div id="event-response-target">
-                        <p>No event selected</p>
+                        <div class="alert alert-danger" role="alert">
+                            <strong class="text-lg">
+                                Fetch currently does not function because of CSRF protection
+                            </strong>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -85,7 +90,7 @@
     <script>
         async function request_event_schedule(data) {
             const event_url = {{ url_for("admin.render_event_schedule")|tojson }};
-            data.append("csrf_token", document.getElementById("csrf_token").value)
+            // data.append("csrf_token", document.getElementById("csrf_token").value)
             const response = await fetch(event_url, {
                 method: "POST",
                 mode: "cors",

@@ -35,19 +35,40 @@ class Competitions(db.Model, CRUDMixin):
 
     gamematch: Mapped[t.List[GameMatch]] = relationship(back_populates='comp')
 
-    def __init__(self, *args, **kwargs) -> None:
-        super(Competitions, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs) -> None:
+    #     super(Competitions, self).__init__(*args, **kwargs)
 
     @classmethod
     def create_from_frc(cls, event_code: str, tournament_level: str = "playoff", year: t.Optional[int] = None) -> Competitions:
 
         instance = cls()
+
         if year is not None:
             instance.year = year
+        
         schedule = api.EventSchedule(event_code=event_code, year=instance.year, tournament_level=tournament_level)
         event_data = api.Events(year = instance.year, event_code = event_code).json["Events"][0]
+        
         instance.gamematch = []
+
         for match_ in schedule.schedule:
+            instance.gamematch.append(GameMatch.from_frc_report(match_))
+        
+        instance.start_date = datetime.strptime(event_data["dateStart"], "%Y-%m-%dT%H:%M:%S").date() # 2024-03-06T00:00:00
+        instance.end_date = datetime.strptime(event_data["dateEnd"], "%Y-%m-%dT%H:%M:%S").date()
+
+        instance.name = event_data["name"]
+        
+        return instance
+    
+    @classmethod
+    def create_from_event(cls, event: api.EventSchedule) -> Competitions:
+        instance = cls()
+        instance.year = event.year
+        
+        event_data = api.Events(year = instance.year, event_code = event.event_code).json["Events"][0]
+        instance.gamematch = []
+        for match_ in event.schedule:
             instance.gamematch.append(GameMatch.from_frc_report(match_))
         
         instance.start_date = datetime.strptime(event_data["dateStart"], "%Y-%m-%dT%H:%M:%S").date() # 2024-03-06T00:00:00

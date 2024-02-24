@@ -9,6 +9,12 @@ from flask import current_app
 class FRCAPIError(Exception):
     pass
 
+class FRCAPIAuthorizationError(FRCAPIError):
+    pass
+
+class FRCAPIBadResponse(FRCAPIError):
+    pass
+
 
 class BaseRequest(object):
     """Contains common methods for API Call
@@ -40,8 +46,12 @@ class BaseRequest(object):
             headers (dict, optional): Additional request headers. Defaults to {}.
             defer (bool, optional): If the object should defer _make_request, requiring the method to be called seperately. Defaults to False.
         """
-        self.REQUIRED_HEADERS["Authorization"] = f"Basic {current_app.config.get('FRC_API_ENCODED_KEY', None)}"
+        encoded_key = current_app.config.get('FRC_API_ENCODED_KEY', None)
+        if encoded_key is None:
+            raise FRCAPIAuthorizationError()
+        self.REQUIRED_HEADERS["Authorization"] = f"Basic {encoded_key}"
         
+
         self.path = path
         self.method = method
         self.data = data
@@ -67,10 +77,10 @@ class BaseRequest(object):
         self._response = response
 
         if self.response is None:
-            raise FRCAPIError("Request returned NoneType object")
+            raise FRCAPIBadResponse("Request returned NoneType object")
         
         if self.status != 200:
-            raise FRCAPIError(f"Error {self.status}")
+            raise FRCAPIBadResponse(f"Bad response code {self.status}")
         self.json = response.json()
         
     @property
@@ -83,6 +93,10 @@ class BaseRequest(object):
         if self._response is None:
             raise FRCAPIError("Response is None")
         return self._response
+    
+    @property
+    def target_url(self) -> str:
+        return f"{self.DEFAULT_ENDPOINT}{self.path}"
 
 
 class RootCall(BaseRequest):
@@ -115,6 +129,10 @@ class EventSchedule(BaseRequest):
     event in a particular season.
     """
 
+    event_code: str
+    year: int
+    level: str
+
     def __init__(
         self, 
         event_code: str, 
@@ -123,7 +141,8 @@ class EventSchedule(BaseRequest):
         team_number: t.Optional[int] = None, 
         *, 
         start: t.Optional[int] = None, 
-        end: t.Optional[int] = None
+        end: t.Optional[int] = None,
+        defer: bool = False
     ) -> None:
         """Returns the match schedule for a specific event from event code
 
@@ -138,6 +157,10 @@ class EventSchedule(BaseRequest):
         
         if year is None:
             year = date.today().year
+
+        self.event_code = event_code
+        self.year = year
+        self.level = tournament_level
         
         url_data_keys = [
             (tournament_level, "tournamentLevel"),
@@ -154,7 +177,7 @@ class EventSchedule(BaseRequest):
                     path = path + "?"
                 path = f"{path}{url_data[1]}={url_data[0]}"
         
-        super(EventSchedule, self).__init__(path=path)
+        super(EventSchedule, self).__init__(path=path, defer=defer)
     
     @classmethod
     def quals(cls, event_code: str, year: t.Optional[int] = None) -> EventSchedule:
@@ -185,7 +208,7 @@ class EventSchedule(BaseRequest):
         return instance
 
     @property
-    def schedule(self) -> dict[str, t.Any]:
+    def schedule(self) -> list[dict[str, t.Any]]:
         """Event schedule"""
         return self.json["Schedule"]
 

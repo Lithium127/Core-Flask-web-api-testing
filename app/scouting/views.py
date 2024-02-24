@@ -8,7 +8,7 @@ from .models import GameMatch, DataTranslation, Report, ReportData
 
 @scouting.route("/")
 def index():
-    return render_template('landing.html', match_schedule = ["umm","unn"])
+    return render_template('landing.html', match_schedule = [])
 
 
 # API endpoint for sending data to.

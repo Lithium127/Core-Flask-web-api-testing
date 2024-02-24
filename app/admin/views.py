@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for
 from datetime import date
 
 from . import admin
-from .form import CreateEventForm
+
 
 from app.frc_api import api
 
@@ -11,8 +11,7 @@ from app.frc_api import api
 
 @admin.route("/")
 def index():
-    create_event_form = CreateEventForm()
-    return render_template("admin_home.html", create_event_form = create_event_form)
+    return render_template("admin_home.html")
 
 
 @admin.route("/database")
