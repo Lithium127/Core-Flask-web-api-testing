@@ -9,7 +9,8 @@ js = Bundle(
 )
 
 css = Bundle(
-    'css/style.scss'
+    'css/style.css',
+    'css/theme.css'
 )
 
 assets.register('css_all', css)

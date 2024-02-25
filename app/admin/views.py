@@ -21,7 +21,7 @@ def database():
 
 @admin.post("/fetch/event-schedule")
 def render_event_schedule():
-    data = request.get_json()
+    data = request.json
     event_code = data.get("eventCode", None)
     if event_code is None or len(event_code) < 4:
         return "<h1>No event found</h1>" # really bad error handling :(

@@ -5,12 +5,15 @@
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
-    {% call card_wide_link(
-        "Hello Scouter!",
-        "Start scouting robots easy",
-        button_text="Take me there!",
-        link=url_for('scouting.index')
-    )%}
-    Follow this link to go to the scouting form!
-    {% endcall %}
+    <div data-bs-theme="core-highlight">
+
+        {% call card_wide_link(
+            "Hello Scouter!",
+            "Start scouting robots easy",
+            button_text="Take me there!",
+            link=url_for('scouting.index')
+        )%}
+            Follow this link to go to the scouting form!
+        {% endcall %}
+    </div>
 {% endblock %}

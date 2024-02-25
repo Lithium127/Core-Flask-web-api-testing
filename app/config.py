@@ -30,7 +30,7 @@ class DevelopmentConfig(BaseConfig):
 
     # Change the key to avoid issues with development env variables
     SECRET_KEY = "development"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///scouting_dev.db"
 
 class TestingConfig(BaseConfig):
     TESTING = True

@@ -1,9 +1,4 @@
 
-[data-bs-theme="core"] {
-    --bs-primary: #ff751a;
-    --bs-primary-rgb: #{to-rgb(var(--bs-primary))};
-}
-
 body {
     width: 100%;
 }

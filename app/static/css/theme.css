@@ -1,0 +1,6 @@
+
+[data-bs-theme="dark"] {
+    --bs-primary: #ff751a;
+    --bs-primary-rgb: #{to-rgb(var(--bs-primary))};
+}
+
