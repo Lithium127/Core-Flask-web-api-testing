@@ -1,0 +1,22 @@
+
+<div>
+    {# This span is used to set other information on the page from the original onload function #}
+    <span class="visually-hidden" id="frc-api-team-name-short">{{ team.name_short }}</span>
+
+    <table class="table">
+        <tbody>
+            {% for key, value in team.info.items() %}
+                <tr class="overflow-hidden">
+                    <td class="col-4">{{ key }}</td>
+                    <td>
+                        {% if value in [None, ""] %}
+                            None
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

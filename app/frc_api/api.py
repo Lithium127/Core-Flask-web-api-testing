@@ -264,3 +264,7 @@ class Team(BaseRequest):
         super(Team, self).__init__(path=f"{year}/teams?teamNumber={team_number}")
         
         self.info = self.json["teams"][0]
+    
+    @property
+    def name_short(self) -> str:
+        return self.info["nameShort"] or "Placeholder"

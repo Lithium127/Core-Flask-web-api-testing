@@ -5,14 +5,16 @@
         <div class="row">
             <div class="col-md-6">
                 <h1>{{ team.id }}</h1>
-                <h4>{{ team.name }}</h4>
+                <h4 class="placeholder-glow" id="team-name">
+                    <span class="placeholder col-8"></span>
+                </h4>
                 <hr class="col-4">
                 
             </div>
             <div class="col-md-6 bg-primary-dark">
                 <h4>Team API Data</h4>
                 <hr class="col-4">
-                <div class="accordion accordion-flush" id="api-data">
+                <div class="accordion accordion" id="api-data">
                     <div class="accordion-item">
                         {# 
                             THE BLUE ALLIANCE INFORMATION
@@ -22,7 +24,7 @@
                                 The Blue Alliance
                             </button>
                         </h2>
-                        <div id="tbaData" class="accordion-collapse collapse show">
+                        <div id="tbaData" class="accordion-collapse collapse show" data-bs-parent="api-data">
                             <div class="accordion-body bg-body-tertiary">
                                 <p>Data from The Blue Alliance is found here, start with placeholders or loading bars</p>
                             </div>
@@ -38,9 +40,13 @@
                                 FRC Data
                             </button>
                         </div>
-                        <div id="frcData" class="accordion-collapse collapse show">
-                            <div class="accordion-body bg-body-tertiary">
-                                <p>Something about FRC API Data requests goes here</p>
+                        <div id="frcData" class="accordion-collapse collapse show" data-bs-parent="api-data">
+                            <div class="accordion-body bg-body-tertiary" id="frc-data-target">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border" role="status">
+                                      <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                  </div>
                             </div>
                         </div>
                     </div>
@@ -54,7 +60,7 @@
                                 Other Data
                             </button>
                         </div>
-                        <div id="otherData" class="accordion-collapse collapse">
+                        <div id="otherData" class="accordion-collapse collapse" data-bs-parent="api-data">
                             <div class="accordion-body bg-body-tertiary">
                                 <strong>Insert a rendered table containing site specific data here or something</strong>
                             </div>
@@ -64,4 +70,18 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            url_endpoint = "{{ url_for('teams.fetch_frc_data', id=team.id) }}"
+            fetch(url_endpoint, {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("frc-data-target").innerHTML = html;
+                document.getElementById("team-name").innerHTML = document.getElementById("frc-api-team-name-short").innerHTML;
+            })
+            .then(error => conosle.error("FRC API Error: ", error))
+        };
+    </script>
 {% endblock %}
