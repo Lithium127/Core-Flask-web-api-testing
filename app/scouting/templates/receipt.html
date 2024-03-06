@@ -1,0 +1,24 @@
+
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="container">
+        <a href="{{ url_for('scouting.index') }}">
+            <button class="btn btn-primary">Back to Scouting</button>
+        </a>
+        <table class="table">
+            <thead>
+                <th>Key</th>
+                <th>User Value</th>
+            </thead>
+            <tbody>
+                {% for key, value in response_dict.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

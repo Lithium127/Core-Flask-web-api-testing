@@ -293,6 +293,32 @@ class ReportData(db.Model, CRUDMixin):
                     continue
 
                 self.__setattr__(dt.column_key, value)
+        
+        return self
+    
+    def values(self) -> dict[str, t.Any]:
+        """Returns a dict containing all values in the instanced table row
+        example:
+        {
+            <row_title>:<value>
+        }
+        
+        rather than
+        {
+            "b01":<value>
+        }
+
+        Returns:
+            dict[str, t.Any]: Row titles and their tied values
+        """
+        data = {}
+        stmt = select(DataTranslation).where(DataTranslation.fiscal_year == date.today().year)
+        cols = db.session.scalars(stmt).all()
+        
+        for dt in cols:
+            value = self.__dict__.get(dt.column_key, None)
+            data[dt.title] = value
+        return data
 
 
         
@@ -329,3 +355,10 @@ class Report(db.Model, CRUDMixin):
     def __new__(cls, *args, **kwargs) -> Report:
         instance = super().__new__(cls)
         return instance
+    
+    def dynamic_from_dict(self: Report, data: dict) -> None:
+        #with contextlib.suppress(Exception):
+        if self.dynamic_data is None:
+            self.dynamic_data = ReportData()
+        self.dynamic_data.set_values_from_dict(data)
+        

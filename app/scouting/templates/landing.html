@@ -4,5 +4,26 @@
 {% block title %}Scouting Home{% endblock %}
 
 {% block body %}
-    {% include 'assets/schedule.html' with context %}
+    <div class="container">
+        <div class="row">
+            <div class="column col-md-8 overflow-scroll" style="height: 750px" >
+
+                {% include 'assets/schedule.html' with context %}
+            </div>
+            <div class="column col-md-4">
+
+                {# Card for team schedule #}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">See your scouting schedule</h5>
+                        <p class="card-text">Heres a place where you can easily access your scouting schedule as defined by your team admin</p>
+                        <a href="#" class="btn btn-primary">Take me there!</a>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
 {% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'split_view.html' %}
+
+{% block title %}
+    Teams list
+{% endblock %}
+
+{% block body_left %}
+    <div>
+        <h3>Teams List</h3>
+        {% include 'assets/team_table.html' %}
+    </div>
+{% endblock %}
+
+{% block body_right %}
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">
+                WORDS
+            </h1>
+        </div>
+    </div>
+{% endblock %}

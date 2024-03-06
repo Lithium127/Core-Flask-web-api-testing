@@ -1,6 +1,7 @@
 from flask import Flask, render_template, g, flash
 
 import time
+import requests
 
 from . import config
 
@@ -54,7 +55,15 @@ def register_commands(app: Flask) -> None:
     from app.admin.cli import admin_cli
     app.cli.add_command(admin_cli)
 
-
+def register_error_handler(app: Flask) -> None:
+    
+    for status_code, error_message in {
+        500: "Internal Server Error",
+        404: "Page not found"
+    }.items():
+        @app.errorhandler(status_code)
+        def error_handler(e):
+            return render_template(f"errors/{status_code}.html", error = e, url_name = error_message), status_code
 
 def create_app(config: config.BaseConfig = config.BaseConfig()) -> Flask:
     """Creates an instance of the CORE 2062 scouting site for use in a web application
@@ -73,6 +82,8 @@ def create_app(config: config.BaseConfig = config.BaseConfig()) -> Flask:
     register_extensions(app)
     register_blueprints(app)
     register_commands(app)
+    register_error_handler(app)
+
 
     with app.app_context():
         db.create_all()

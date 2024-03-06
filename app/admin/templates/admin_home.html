@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 
 {% from 'macros/card.html' import card_wide_link %}
+{% from 'bootstrap5/form.html' import render_form %}
 
 {% block title %}
-    Admin | Homepage
+    <a href="{{ url_for('admin.index') }}" class="text-primary">Admin</a> | Homepage
 {% endblock %}
 
 {% block body %}
@@ -15,9 +16,11 @@
             <div class="col-md-8">
                 {% call card_wide_link("Databases","Modify data tables by year") %}
                     <p>
-                        Follow this link to modify names and other information for dynamic report data
+                        Follow this link to edit form fields for the year
                     </p>
+                    <a href="{{ url_for('admin.edit_form_fields') }}"><button class="btn btn-primary">Edit Form Fields</button></a>
                 {% endcall %}
+                
             </div>
             <div class="col-md-4">
                 <h2>Quick Reference</h2>
@@ -43,28 +46,37 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <form id="create-event" action="{{ url_for('admin.create_event') }}" method="post">
-                            {# create_event_form.csrf_token #}
+                        <form id="create-event">
+                            {{ create_event_form.csrf_token }}
+                            {# MARKED FOR REFACTOR #}
+                            {# 
+                                Name attributes are incredibly important here, if anything is
+                                changed in the create_event_form within the form.py file then the names
+                                will have to be changed as that is what ties an input to a field. This
+                                is a really janky work-around for this problem
+                            #}
                             <div class="input-group">
 
                                 
                                 <span class="input-group-text" id="event-id-label">Event ID</span>
-                                <input type="text" class="form-control" placeholder="ARLI" id="event-id" aria-describedby="event-id-label">
+                                <input type="text" class="form-control" placeholder="ARLI" id="event-id" aria-describedby="event-id-label" name="event_code">
                                 
                                 <div class="form-floating">
-                                    <input type="text" id="event-year" class="form-control" placeholder="2024">
+                                    <input type="text" id="event-year" class="form-control" placeholder="2024" name="year">
                                     <label for="event-year">Year</label>
                                 </div>
                                 
-                                <div class="form-floating">
-                                    <select class="form-select" id="event-level">
+                                <div class="form-floating" required>
+                                    <select class="form-select" id="event-level" name="event_type" required>
                                         <option value="qual">Quals</option>
                                         <option value="playoff">Playoffs</option>
                                     </select>
                                     <label for="event-level">Event Level</label>
                                 </div>
+
                                 
-                                <button type="button" class="btn btn-outline-primary" onclick="event_schedule()">Search</button>
+                                
+                                <button type="submit" form="create-event" class="btn btn-outline-primary">Search</button>
                             </div>
                         </form>
 
@@ -73,13 +85,8 @@
                             <a href="https://frc-events.firstinspires.org/2024/Events/EventList" target="_blank"><button class="btn btn-outline-secondary btn-sm">FRC Events</button></a>
                         </div>
                     </div>
-                    <div id="event-response-target">
-                        <div class="alert alert-danger" role="alert">
-                            <strong class="text-lg">
-                                Fetch currently does not function because of CSRF protection
-                            </strong>
-                        </div>
-                    </div>
+                    
+                    <div id="event-response-target"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" form="create-event" class="btn btn-primary">Create Event</button>
@@ -87,43 +94,28 @@
             </div>
         </div>
     </div>
+
     <script>
-        async function request_event_schedule(data) {
-            const event_url = {{ url_for("admin.render_event_schedule")|tojson }};
-            // data.append("csrf_token", document.getElementById("csrf_token").value)
-            const response = await fetch(event_url, {
+        
+        const url_endpoint = window.location.href;
+
+        const form = document.getElementById("create-event");
+        const target = document.getElementById("event-response-target");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            target.innerHTML = '<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            fetch(url_endpoint, {
                 method: "POST",
-                mode: "cors",
-                credentials: "same-origin",
-                headers:{
-                    "Content-Type": "application/json"
-                },
-                body: data
-            });
-            return response;
-        }
-
-        function event_schedule() {
-            let target = document.getElementById("event-response-target");
-
-            target.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-
-            var event_level = document.getElementById("event-level");
-
-            let data = new FormData()
-            data.append("eventCode", document.getElementById("event-id").value)
-            data.append("year", document.getElementById("event-year").value)
-            data.append("level", event_level.options[event_level.selectedIndex].value)
-            request_event_schedule(data).then(
-                response => response.text()
-            ).then(
-                text => target.innerHTML = text
-            );
-
-            button.innerHTML = "Get Event";
-
-        }
-
+                body: new FormData(form)
+            })
+            .then(response => response.text())
+            .then(html => {
+                target.innerHTML = html;
+            })
+            .catch(error => console.error("Error: ", error));
+            
+        });
         
     </script>
 {% endblock %}

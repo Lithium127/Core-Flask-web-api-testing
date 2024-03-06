@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    {{ error.code }} | {{ url_name }}
+{% endblock %}
+
+{% block body %}    
+    <div style="height: 100%;">
+        {% block error_desc %}
+            <p>Non-descript error occurred</p>
+        {% endblock %}
+    </div>
+{% endblock %}

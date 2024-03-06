@@ -15,7 +15,6 @@ class FRCAPIAuthorizationError(FRCAPIError):
 class FRCAPIBadResponse(FRCAPIError):
     pass
 
-
 class BaseRequest(object):
     """Contains common methods for API Call
     Each call subclasses this object and make its call on __init__, storing the response.

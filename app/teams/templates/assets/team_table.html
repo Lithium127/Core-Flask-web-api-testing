@@ -1,0 +1,26 @@
+
+{% from 'bootstrap5/utils.html' import render_icon %}
+
+{% if teams|length > 0 %}
+    <table class="table overflow-scroll" style="height: 1000px;">
+        <thead>
+            <th>Team #</th>
+            <th>Team Name</th>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr>
+                    <td>{{ team.id }}</td>
+                    <td>Placeholder</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        {{ render_icon('info-circle') }}
+        There aren't any teams registered in our database at the moment,
+        if you are not part of the development team please report this failure to 
+        CORE 2062's scouting subteam
+    </div>
+{% endif %}

@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block title %}
+    Scouting Report | Team {{ report.team_number }}
+{% endblock %}
+
+
+{% block body %}
+    <form id="report-form" method="post">
+        {{ report_form.csrf_token() }}
+
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-8 bg-body-tertiary overflow-scroll" style="height:500px;">
+                    {# 
+                        Match specific scores and information 
+                    #}
+                
+                    <h2>Auton Period</h2>
+                    {{ report_form.auto_notes.label }}
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary" type="button" id="auto-sub">-</button>
+                        {{ report_form.auto_notes(class="form-control") }}
+                        <button class="btn btn-outline-secondary" type="button" id="auto-add">+</button>
+                    </div>
+                    
+                    {{ report_form.auto_pickup.label }}
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary" type="button" id="auto-sub">-</button>
+                        {{ report_form.auto_pickup(class="form-control") }}
+                        <button class="btn btn-outline-secondary" type="button" id="auto-add">+</button>
+                    </div>
+                    <hr>
+                    <h2>Teleop Period</h2>
+
+                    {{ report_form.tele_notes.label }}
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary" type="button" id="auto-sub">-</button>
+                        {{ report_form.tele_notes(class="form-control") }}
+                        <button class="btn btn-outline-secondary" type="button" id="auto-add">+</button>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        {{ report_form.tele_from_subwoofer.label(class="form-check-label") }}
+                        {{ report_form.tele_from_subwoofer(class="form-check-input") }}
+                    </div>
+                    <div class="form-check mb-2">
+                        {{ report_form.tele_from_podium.label(class="form-check-label") }}
+                        {{ report_form.tele_from_podium(class="form-check-input")}}
+                    </div>
+                    <div class="form-check mb-2">
+                        {{ report_form.tele_from_wing.label(class="form-check-label") }}
+                        {{ report_form.tele_from_wing(class="form-check-input")}}
+                    </div>
+                    <div class="form-check mb-2">
+                        {{ report_form.tele_from_center.label(class="form-check-label") }}
+                        {{ report_form.tele_from_center(class="form-check-input")}}
+                    </div>
+                    {{ report_form.climb.label }}
+                    {{ report_form.climb(class="form-select mb-2") }}
+
+                    {{ report_form.intake_preference.label }}
+                    {{ report_form.intake_preference(class="form-select mb-2") }}
+
+                    {{ report_form.intake_preference.label }}
+                    {{ report_form.intake_preference(class="form-select mb-2") }}
+                    
+                    
+                </div>
+                
+                <div class="col-md-4">
+                    <hr>
+                    {# 
+                        hidden information 
+                    #}
+                    
+                    {{ report_form.match_number.label }}
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">#</span>
+                        {{ report_form.match_number(class="form-control", readonly=True)}}
+                        <span class="input-group-text">Pos</span>
+                        {{ report_form.position(class="form-control", readonly=True) }}
+                    </div>
+    
+                    {# 
+                        Other information from the scouter, name and comments 
+                    #}
+                    {{ report_form.name.label }}
+                    {{ report_form.name(id="test", class="form-control", placeholder="John Doe") }}
+                    
+                    <hr>
+                    
+                    {{ report_form.disabled.label }}
+                    {{ report_form.disabled(class="form-select") }}
+                    
+                    {{ report_form.driver_confidence.label }}
+                    {{ report_form.driver_confidence(class="form-range", min=1, max=5) }}
+                    
+                    {{ report_form.defence_rating.label }}
+                    {{ report_form.defence_rating(class="form-range", min=1, max=5) }}
+                    
+                    {{ report_form.comments.label }}
+                    {{ report_form.comments(class="form-control") }}
+
+                    <hr>
+
+                    {{ report_form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- {{ render_form(report_form) }} -->
+{% endblock %}

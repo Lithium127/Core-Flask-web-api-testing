@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="column col-md-8">
+            {% block body_left %}
+                <h1>Body LEFT</h1>
+            {% endblock %}
+        </div>
+        <div class="column col-md-4">
+            {% block body_right %}
+                <h1>Body RIGHT</h1>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

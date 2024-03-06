@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}
+<a href="{{ url_for('admin.index') }}" class="text-primary">Admin</a> | Edit Form Fields
+{% endblock %}
+
+
+{% block body %}
+    {{ render_form(form, id="test-fetch") }}
+
+    <div id="response">
+
+    </div>
+
+    <script>
+        const url_endpoint = window.location.href;
+
+        const form = document.getElementById("test-fetch");
+        const target = document.getElementById("response");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+    
+            fetch(url_endpoint, {
+                method: "POST",
+                body: new FormData(form)
+            })
+            .then(response => response.text())
+            .then(html => {
+                target.innerHTML = html;
+            })
+            .catch(error => console.error("Error: ", error));
+            
+        });
+    </script>
+{% endblock %}
